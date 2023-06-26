@@ -34,7 +34,10 @@ public class CustomOAuthSuccessHandler implements AuthenticationSuccessHandler{
 
             if(dto.getPw() == null || dto.getPw().equals("")){
                 response.sendRedirect("/member/modify");
+                return;
             }
+
+            response.sendRedirect("/member/mypage");
 
 
     }

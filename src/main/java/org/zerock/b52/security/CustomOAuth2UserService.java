@@ -11,13 +11,19 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.zerock.b52.dto.MemberDTO;
+import org.zerock.b52.dto.MemberReadDTO;
+import org.zerock.b52.mappers.MemberMapper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService{
     
+    private final MemberMapper memberMapper;
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         
@@ -46,15 +52,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService{
         log.info("===============================");
 
         // DB에 해당 이메일 사용자가 있다면
-
-
-        
-        // 아니라면
-        // 소셜사용자랑 일반사용자랑 화면에서 동일한 방법으로 처리하기 위해 같이 MemberDTO를 사용한다.
-        // 인증이 이미 끝난곳에서 패드워드는 의미가 없기때문에 신경쓰지 않아도 된다.
-        MemberDTO memberDTO = new MemberDTO(email, "", "카카오사용자", List.of("USER"));
-
-        return memberDTO;
+        MemberReadDTO readDTO = memberMapper.selectOne(email);
+    
+        if (readDTO != null){
+            MemberDTO memberDTO = new MemberDTO(
+                email,
+                readDTO.getMpw(),
+                readDTO.getMname(),
+                readDTO.getRolenames()
+            );     
+            return memberDTO;   
+        }else{
+            // 아니라면
+            // 소셜사용자랑 일반사용자랑 화면에서 동일한 방법으로 처리하기 위해 같이 MemberDTO를 사용한다.
+            // 인증이 이미 끝난곳에서 패드워드는 의미가 없기때문에 신경쓰지 않아도 된다.
+            MemberDTO memberDTO = new MemberDTO(email, "", "카카오사용자", List.of("USER"));
+            return memberDTO;
+        }
+  
     }
 
     private String getKakaoEmail(Map<String, Object> paramMap){
