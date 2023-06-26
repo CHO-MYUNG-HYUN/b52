@@ -38,8 +38,7 @@ public class CustomOAuthSuccessHandler implements AuthenticationSuccessHandler{
             }
 
             response.sendRedirect("/member/mypage");
-
-
+            
     }
     
 }
