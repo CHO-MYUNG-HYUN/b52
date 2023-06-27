@@ -41,6 +41,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService{
 
         String email = null;
 
+        // 소셜 분기
         switch (clientName){
             case "kakao":
                 email = getKakaoEmail(paramMap);
